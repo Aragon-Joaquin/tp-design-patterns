@@ -9,7 +9,7 @@
 - **models/**: user uses a string to check states. PortfolioHolding is not being used other than for Portfolio
 - **routes/:** unless i make a route group, or do the checking after the routes that don't require auth
 - **storage/:** no idea
-- **index.ts**:
+- **index.ts**: each controller is only used in one place at a time
 
 ##### requirements:
 - at least 3 patterns

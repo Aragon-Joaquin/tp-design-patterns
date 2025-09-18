@@ -4,6 +4,7 @@ export * from './authController'
 export * from './portfolioController'
 export * from './tradingController'
 export * from './userController'
+export * from './marketController'
 
 // Instancias de servicios - Candidato para Dependency Injection
 // const tradingService = new TradingService();

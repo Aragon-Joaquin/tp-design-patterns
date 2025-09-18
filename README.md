@@ -4,11 +4,11 @@
 
 
 #### observations:
-- **controllers/:** repeats try-catch a ton, one service is uniquely used in one controller, "storage" repeats a ton
+- **controllers/:** repeats try-catch a ton, one service is uniquely used in one controller, "storage" repeats a ton. *only used in index.ts*
 - **middleware/:** config is used in all of the middlewares
 - **models/**: user uses a string to check states. PortfolioHolding is not being used other than for Portfolio
 - **routes/:** unless i make a route group, or do the checking after the routes that don't require auth
-- **storage/:** no idea
+- **storage/:** i can separate the methods in groups. (user, assets, transactions, orders, portfolios, marketData)
 - **index.ts**: each controller is only used in one place at a time
 
 ##### requirements:
@@ -31,5 +31,5 @@
 - ***MarketSimulationService:***
   - **simulateMarketEvent**: apply state pattern???
 
-- ***MarketSimulationService:***
-  - **analyzePortfolioRisk**: apply state pattern
+- ***MarketAnalysisService:***
+  - **analyzePortfolioRisk**: apply state pattern + facade?

@@ -1,7 +1,7 @@
 // Servicio de simulación de mercado
 import { MarketData, Asset } from "../models/types";
 import { storage } from "../utils/storage";
-import { config } from "../config/config";
+import { config } from "../config";
 
 export class MarketSimulationService {
   private isRunning: boolean = false;

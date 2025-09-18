@@ -1,14 +1,10 @@
 // Servicios de trading
 import {
   Transaction,
-  Order,
-  Asset,
-  User,
   Portfolio,
-  PortfolioHolding,
 } from "../models/types";
 import { storage } from "../utils/storage";
-import { config } from "../config/config";
+import { config } from "../config";
 
 export class TradingService {
   // Ejecutar orden de compra al precio de mercado

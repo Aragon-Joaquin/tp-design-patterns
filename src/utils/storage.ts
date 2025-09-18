@@ -7,7 +7,7 @@ import {
   Portfolio,
   MarketData,
 } from "../models/types";
-import { config } from "../config/config";
+import { config } from "../config";
 
 // Base de datos simulada en memoria (se pierde al reiniciar)
 class InMemoryStorage {

@@ -3,11 +3,10 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "./config/swagger";
+import { swaggerSpec, environmentConfig } from "./config";
 import apiRoutes from "./routes/api";
-import { requestLogger } from "./middleware/auth";
-import { MarketSimulationService } from "./services/MarketSimulationService";
-import { environmentConfig } from "./config/environment";
+import { requestLogger } from "./middleware";
+import { MarketSimulationService } from "./services";
 
 // Crear aplicación Express
 const app = express();

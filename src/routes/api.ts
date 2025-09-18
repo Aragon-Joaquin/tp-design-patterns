@@ -8,7 +8,7 @@ import {
   PortfolioController,
   AnalysisController,
 } from "../controllers";
-import { authenticateApiKey, validateTradeData } from "../middleware/auth";
+import { authenticateApiKey, validateTradeData } from "../middleware";
 
 const router = Router();
 

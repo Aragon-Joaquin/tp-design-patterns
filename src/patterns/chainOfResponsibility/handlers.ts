@@ -3,27 +3,34 @@ import { MiddlewareFunc } from "../../types";
 import { muxRouter } from "./middlewareDecorator";
 
 //! handlers. 
-//TODO: Cannot set headers after they are sent to the client
+
+// el callback pasado a los authHandlers es para evitar que el siguiente el error lo crashee:
+// "Cannot set headers after they are sent to the client".
 export class AuthHandler extends muxRouter {
     public handle(...args: Parameters<MiddlewareFunc>) {
+        const [req, res, next] = args
+
         try {
-            authenticateApiKey(...args)
+            authenticateApiKey(req, res, () => {
+                if (this.nextHandler) next()
+                else return
+            })
             super.handle(...args);
-        } catch (e) {
-            console.log("Error en AuthHandler: ", e)
-        }
+        } catch (error) {}
 
     }
 }
 
 export class ValidateTradeHandler extends muxRouter {
     public handle(...args: Parameters<MiddlewareFunc>) {
+        const [req, res, next] = args
+        
         try {
-            validateTradeData(...args)
-            super.handle(...args)
-        } catch (e) {
-            console.log("Error en TradeHanlder: ", e)
-        }
-
+            validateTradeData(req, res, () => {
+                if (this.nextHandler) next()
+                else return
+            })
+            super.handle(...args);
+        } catch (error) {}
     }
 }

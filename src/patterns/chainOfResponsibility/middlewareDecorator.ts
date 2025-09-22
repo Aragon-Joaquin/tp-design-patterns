@@ -8,7 +8,7 @@ interface MiddlewareHandler {
 
 //! aplicando el patron de responsabilidad de cadenas??? (chain of responsibility)
 export class muxRouter implements MiddlewareHandler {
-    private nextHandler: MiddlewareHandler | undefined;
+    public nextHandler: MiddlewareHandler | undefined;
     public router = Router()
 
     //* ruta madre

@@ -1,5 +1,4 @@
 // Rutas de la API
-import { Router } from "express";
 import {
   AuthController,
   UserController,
@@ -8,62 +7,46 @@ import {
   PortfolioController,
   AnalysisController,
 } from "../controllers";
-import { authenticateApiKey, validateTradeData } from "../middleware";
+import { AuthHandler, muxRouter, ValidateTradeHandler } from "../patterns";
 
-const router = Router();
+//* este va a ser nuestro nuevo Router. el nombre muxRouter fue inspirado en el lenguaje "golang"
+const router = new muxRouter()
 
+//* nuestros handlers
+const authHandler = new AuthHandler()
+const tradeDataHandler = new ValidateTradeHandler()
+
+router.setNext(authHandler)
+
+//! TODAS ESTAS RUTAS REQUIREN AUTENTICACION!
 // Rutas de autenticación
-router.get("/auth/validate", authenticateApiKey, AuthController.validateApiKey);
+router.Get("/auth/validate", AuthController.validateApiKey);
 
-// Rutas de usuarios (requieren autenticación)
-router.get("/users/profile", authenticateApiKey, UserController.getProfile);
-router.put("/users/profile", authenticateApiKey, UserController.updateProfile);
+// Rutas de usuarios
+router.Get("/users/profile", UserController.getProfile);
+router.Put("/users/profile", UserController.updateProfile);
 
-// Rutas de mercado (requieren autenticación)
-router.get("/market/prices", authenticateApiKey, MarketController.getPrices);
-router.get(
-  "/market/prices/:symbol",
-  authenticateApiKey,
-  MarketController.getPriceBySymbol
-);
+// Rutas de mercado
+router.Get("/market/prices", MarketController.getPrices);
+router.Get("/market/prices/:symbol", MarketController.getPriceBySymbol);
 
-// Rutas de trading (requieren autenticación y validación de datos)
-router.post(
-  "/trading/buy",
-  authenticateApiKey,
-  validateTradeData,
-  TradingController.buyAsset
-);
-router.post(
-  "/trading/sell",
-  authenticateApiKey,
-  validateTradeData,
-  TradingController.sellAsset
-);
-router.get(
-  "/trading/history",
-  authenticateApiKey,
-  TradingController.getTransactionHistory
-);
+router.Get("/trading/history", TradingController.getTransactionHistory);
 
-// Rutas de portafolio (requieren autenticación)
-router.get("/portfolio", authenticateApiKey, PortfolioController.getPortfolio);
-router.get(
-  "/portfolio/performance",
-  authenticateApiKey,
-  PortfolioController.getPerformance
-);
+// Rutas de portafolio
+router.Get("/portfolio", PortfolioController.getPortfolio);
+router.Get("/portfolio/performance", PortfolioController.getPerformance);
 
-// Rutas de análisis (requieren autenticación)
-router.get(
-  "/analysis/risk",
-  authenticateApiKey,
-  AnalysisController.getRiskAnalysis
-);
-router.get(
-  "/analysis/recommendations",
-  authenticateApiKey,
-  AnalysisController.getRecommendations
-);
+// Rutas de análisis
+router.Get("/analysis/risk", AnalysisController.getRiskAnalysis);
+router.Get("/analysis/recommendations", AnalysisController.getRecommendations);
+
+
+//! TODAS ESTAS RUTAS REQUIREN AUTENTICACION + VALIDACION DE DATOS!
+// Rutas de trading
+authHandler.setNext(tradeDataHandler); 
+
+router.Post("/trading/buy", TradingController.buyAsset);
+router.Post("/trading/sell", TradingController.sellAsset);
+
 
 export default router;

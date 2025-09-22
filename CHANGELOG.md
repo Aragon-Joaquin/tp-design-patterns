@@ -1,7 +1,9 @@
-# 21 de septiembre de 2025w
+# 21 de septiembre de 2025
 
 #### Changed:
--
+- **index.ts**: aplicado patron de chain of responsibility.
+- **patterns/**: creada carpeta patterns
+- **types.ts**: creado archivo de tipos genericos
 
 ---
 

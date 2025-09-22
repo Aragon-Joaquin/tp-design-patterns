@@ -1,12 +1,9 @@
-import { NextFunction, Request, Response, Router } from "express"
-import { authenticateApiKey, validateTradeData } from "../../middleware"
-import { HTTPMethod, HTTPMethods } from "../../types";
-
-type middlewareFunc = (req: Request, res: Response, next: NextFunction) => void
+import { Router } from "express"
+import { HTTPMethod, HTTPMethods, MiddlewareFunc } from "../../types";
 
 interface MiddlewareHandler {
     setNext(handler: MiddlewareHandler): void;
-    handle(...args: Parameters<middlewareFunc>): void;
+    handle(...args: Parameters<MiddlewareFunc>): void;
 }
 
 //! aplicando el patron de responsabilidad de cadenas??? (chain of responsibility)
@@ -15,7 +12,7 @@ export class muxRouter implements MiddlewareHandler {
     private router = Router()
 
     //* ruta madre
-    private searchRoute(method: HTTPMethod, route: string, controller: middlewareFunc): ReturnType<typeof Router> {
+    private searchRoute(method: HTTPMethod, route: string, controller: MiddlewareFunc): ReturnType<typeof Router> {
         if (!HTTPMethods[method as keyof typeof HTTPMethods]) 
             throw new Error(`
                 Bad http method assignment in the client!, 
@@ -36,44 +33,29 @@ export class muxRouter implements MiddlewareHandler {
         return handler;
     }
 
-    public handle(...args: Parameters<middlewareFunc>) {
+    public handle(...args: Parameters<MiddlewareFunc>) {
         if (this.nextHandler) this.nextHandler.handle(...args);
         else throw new Error("Wrong arguments. Function needs to be inside of a Router")
     }
 
     //* endpoints
-    public Get(route: string, controller: middlewareFunc) {
+    public Get(route: string, controller: MiddlewareFunc) {
         return this.searchRoute(HTTPMethods.GET, route, controller)
     }
 
-    public Post(route: string, controller: middlewareFunc) {
+    public Post(route: string, controller: MiddlewareFunc) {
         return this.searchRoute(HTTPMethods.POST, route, controller);
     }
 
-    public Put(route: string, controller: middlewareFunc) {
+    public Put(route: string, controller: MiddlewareFunc) {
         return this.searchRoute(HTTPMethods.PUT, route, controller);
     }
 
-    public Patch(route: string, controller: middlewareFunc) {
+    public Patch(route: string, controller: MiddlewareFunc) {
         return this.searchRoute(HTTPMethods.PATCH, route, controller);
     }
 
-    public Delete(route: string, controller: middlewareFunc) {
+    public Delete(route: string, controller: MiddlewareFunc) {
         return this.searchRoute(HTTPMethods.DELETE, route, controller);
-    }
-}
-
-//! auth handlers
-export class AuthHandler extends muxRouter {
-    public handle(...args: Parameters<middlewareFunc>) {
-        authenticateApiKey(...args)
-        super.handle(...args);
-    }
-}
-
-export class ValidateTradeHandler extends muxRouter {
-    public handle(...args: Parameters<middlewareFunc>) {
-        validateTradeData(...args)
-        super.handle(...args)
     }
 }

@@ -9,11 +9,13 @@ interface MiddlewareHandler {
 //! aplicando el patron de responsabilidad de cadenas??? (chain of responsibility)
 export class muxRouter implements MiddlewareHandler {
     private nextHandler: MiddlewareHandler | undefined;
-    private router = Router()
+    public router = Router()
 
     //* ruta madre
     private searchRoute(method: HTTPMethod, route: string, controller: MiddlewareFunc): ReturnType<typeof Router> {
-        if (!HTTPMethods[method as keyof typeof HTTPMethods]) 
+
+        //puedo hacer object.values(HTTPMethods).includes(methods), pero creo que consume mas memoria
+        if (!HTTPMethods[method.toUpperCase() as keyof typeof HTTPMethods])
             throw new Error(`
                 Bad http method assignment in the client!, 
                 only these are allowed: ${Object.keys(HTTPMethods).join(", ")} 
@@ -35,7 +37,7 @@ export class muxRouter implements MiddlewareHandler {
 
     public handle(...args: Parameters<MiddlewareFunc>) {
         if (this.nextHandler) this.nextHandler.handle(...args);
-        else throw new Error("Wrong arguments. Function needs to be inside of a Router")
+        // else throw new Error("Wrong arguments. Function needs to be inside of a Router")
     }
 
     //* endpoints

@@ -25,7 +25,8 @@
   - unless i make a route group, or do the checking after the routes that don't require auth
 
 - **storage/:** 
-  -i can separate the methods in groups. (user, assets, transactions, orders, portfolios, marketData)
+  - i can separate the methods in groups. (auth, user, assets, transactions, orders, portfolios, marketData)
+  - used methods: getBy, getAll, add, update
 
 - **index.ts**: 
   - each controller is only used in one place at a time

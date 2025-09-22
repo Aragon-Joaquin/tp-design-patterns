@@ -158,3 +158,39 @@ class InMemoryStorage {
 
 // Instancia global de almacenamiento
 export const storage = new InMemoryStorage();
+
+
+
+//! testing factory
+
+abstract class FactoryMethod<T> {
+  constructor() {
+    this.initializeDefaultData();
+  }
+
+  initializeDefaultData(){};
+
+  abstract data: T[] | Map<string, T>
+
+  abstract getBy(id: string): T | undefined
+  abstract getAll(): T[]
+  abstract update(data: T): void
+  abstract add (data: T): void
+}
+
+class AuthMethod extends FactoryMethod<User> {
+  private data: Map<string, User> | User[] = [];
+  getBy(id: string): User | undefined {
+    throw new Error("Method not implemented.");
+  }
+  getAll(): User[] {
+    throw new Error("Method not implemented.");
+  }
+  update(data: User): void {
+    throw new Error("Method not implemented.");
+  }
+  add(data: User): void {
+    throw new Error("Method not implemented.");
+  }
+  
+}

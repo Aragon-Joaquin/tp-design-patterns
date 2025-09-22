@@ -36,8 +36,8 @@ export class muxRouter implements MiddlewareHandler {
     }
 
     public handle(...args: Parameters<MiddlewareFunc>) {
-        if (this.nextHandler) this.nextHandler.handle(...args);
-        // else throw new Error("Wrong arguments. Function needs to be inside of a Router")
+        if (!this.nextHandler) return null
+        return this.nextHandler.handle(...args);
     }
 
     //* endpoints

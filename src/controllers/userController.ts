@@ -48,7 +48,7 @@ export class UserController {
       if (email) user.email = email;
       if (riskTolerance) user.riskTolerance = riskTolerance;
 
-      storage.updateUser(user);
+      storage.user.update(user);
 
       res.json({
         message: "Perfil actualizado exitosamente",

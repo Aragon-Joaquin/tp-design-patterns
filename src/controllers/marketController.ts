@@ -5,7 +5,7 @@ import { storage } from "../utils/storage";
 export class MarketController {
   static async getPrices(req: Request, res: Response) {
     try {
-      const marketData = storage.getAllMarketData();
+      const marketData = storage.market.getAll();
 
       res.json({
         prices: marketData.map((data) => ({
@@ -29,7 +29,7 @@ export class MarketController {
   static async getPriceBySymbol(req: Request, res: Response) {
     try {
       const { symbol } = req.params;
-      const marketData = storage.getMarketDataBySymbol(symbol.toUpperCase());
+      const marketData = storage.market.getBySymbol(symbol.toUpperCase());
 
       if (!marketData) {
         return res.status(404).json({

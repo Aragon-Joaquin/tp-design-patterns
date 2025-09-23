@@ -27,7 +27,7 @@ export class TradingController {
       }
 
       // Verificar que el activo existe
-      const asset = storage.getAssetBySymbol(symbol.toUpperCase());
+      const asset = storage.asset.getBySymbol(symbol.toUpperCase());
       if (!asset) {
         return res.status(404).json({
           error: "Activo no encontrado",
@@ -84,7 +84,7 @@ export class TradingController {
       }
 
       // Verificar que el activo existe
-      const asset = storage.getAssetBySymbol(symbol.toUpperCase());
+      const asset = storage.asset.getBySymbol(symbol.toUpperCase());
       if (!asset) {
         return res.status(404).json({
           error: "Activo no encontrado",

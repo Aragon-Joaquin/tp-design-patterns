@@ -2,30 +2,41 @@
 import {
   User,
   Asset,
-  Transaction,
-  Order,
   Portfolio,
   MarketData,
 } from "../models/types";
 import { config } from "../config";
+import { AssetRepository, MarketRepository, OrderRepository, PortfolioRepository, TransactionRepository, UserRepository } from "../patterns";
+
 
 // Base de datos simulada en memoria (se pierde al reiniciar)
+//! repository + singleton
 class InMemoryStorage {
-  private users: Map<string, User> = new Map();
-  private assets: Map<string, Asset> = new Map();
-  private transactions: Transaction[] = [];
-  private orders: Order[] = [];
-  private portfolios: Map<string, Portfolio> = new Map();
-  private marketData: Map<string, MarketData> = new Map();
+  //! repository
+  public user: UserRepository;
+  public asset: AssetRepository;
+  public transaction: TransactionRepository;
+  public order: OrderRepository;
+  public portfolio: PortfolioRepository;
+  public market: MarketRepository;
+
+  //! singleton pattern
+  private static memoryStorage: InMemoryStorage | null;
+
+  public static getMemoryStorage(): InMemoryStorage {
+    if (this.memoryStorage) return this.memoryStorage
+    this.memoryStorage = new InMemoryStorage()
+    return this.memoryStorage;
+  };
 
   constructor() {
-    this.initializeDefaultData();
-  }
+    const usersMap = new Map();
+    const assetsMap = new Map();
+    const marketMap = new Map();
+    const portfolioMap = new Map();
 
-  // Inicializar datos por defecto
-  private initializeDefaultData() {
     // Usuarios por defecto
-    const defaultUsers: User[] = [
+    const defaultUsers = [
       new User(
         "demo_user",
         "demo_user",
@@ -50,9 +61,9 @@ class InMemoryStorage {
         25000.0,
         "low"
       ),
-    ];
+    ]
 
-    defaultUsers.forEach((user) => this.users.set(user.id, user));
+    defaultUsers.forEach((user) => usersMap.set(user.id, user));
 
     // Activos por defecto
     config.market.baseAssets.forEach((baseAsset) => {
@@ -62,135 +73,29 @@ class InMemoryStorage {
         baseAsset.basePrice,
         baseAsset.sector
       );
-      this.assets.set(baseAsset.symbol, asset);
+      assetsMap.set(baseAsset.symbol, asset);
 
       // Datos de mercado iniciales
       const marketData = new MarketData(baseAsset.symbol, baseAsset.basePrice);
-      this.marketData.set(baseAsset.symbol, marketData);
+      marketMap.set(baseAsset.symbol, marketData);
     });
 
     // Portafolios iniciales vacíos
     defaultUsers.forEach((user) => {
       const portfolio = new Portfolio(user.id);
-      this.portfolios.set(user.id, portfolio);
+      portfolioMap.set(user.id, portfolio);
     });
+
+    // Inicializar repositorios
+    this.user = new UserRepository(usersMap)
+    this.asset = new AssetRepository(assetsMap)
+    this.transaction = new TransactionRepository()
+    this.order = new OrderRepository();
+    this.portfolio = new PortfolioRepository();
+    this.market = new MarketRepository();
   }
 
-  // Métodos para usuarios
-  getUserByApiKey(apiKey: string): User | undefined {
-    return Array.from(this.users.values()).find(
-      (user) => user.apiKey === apiKey
-    );
-  }
-
-  getUserById(id: string): User | undefined {
-    return this.users.get(id);
-  }
-
-  updateUser(user: User): void {
-    this.users.set(user.id, user);
-  }
-
-  // Métodos para activos
-  getAllAssets(): Asset[] {
-    return Array.from(this.assets.values());
-  }
-
-  getAssetBySymbol(symbol: string): Asset | undefined {
-    return this.assets.get(symbol);
-  }
-
-  updateAsset(asset: Asset): void {
-    this.assets.set(asset.symbol, asset);
-  }
-
-  // Métodos para transacciones
-  addTransaction(transaction: Transaction): void {
-    this.transactions.push(transaction);
-  }
-
-  getTransactionsByUserId(userId: string): Transaction[] {
-    return this.transactions.filter((t) => t.userId === userId);
-  }
-
-  getAllTransactions(): Transaction[] {
-    return [...this.transactions];
-  }
-
-  // Métodos para órdenes
-  addOrder(order: Order): void {
-    this.orders.push(order);
-  }
-
-  getOrdersByUserId(userId: string): Order[] {
-    return this.orders.filter((o) => o.userId === userId);
-  }
-
-  updateOrder(order: Order): void {
-    const index = this.orders.findIndex((o) => o.id === order.id);
-    if (index !== -1) {
-      this.orders[index] = order;
-    }
-  }
-
-  // Métodos para portafolios
-  getPortfolioByUserId(userId: string): Portfolio | undefined {
-    return this.portfolios.get(userId);
-  }
-
-  updatePortfolio(portfolio: Portfolio): void {
-    this.portfolios.set(portfolio.userId, portfolio);
-  }
-
-  // Métodos para datos de mercado
-  getAllMarketData(): MarketData[] {
-    return Array.from(this.marketData.values());
-  }
-
-  getMarketDataBySymbol(symbol: string): MarketData | undefined {
-    return this.marketData.get(symbol);
-  }
-
-  updateMarketData(data: MarketData): void {
-    this.marketData.set(data.symbol, data);
-  }
 }
 
 // Instancia global de almacenamiento
-export const storage = new InMemoryStorage();
-
-
-
-//! testing factory
-
-abstract class FactoryMethod<T> {
-  constructor() {
-    this.initializeDefaultData();
-  }
-
-  initializeDefaultData(){};
-
-  abstract data: T[] | Map<string, T>
-
-  abstract getBy(id: string): T | undefined
-  abstract getAll(): T[]
-  abstract update(data: T): void
-  abstract add (data: T): void
-}
-
-class AuthMethod extends FactoryMethod<User> {
-  private data: Map<string, User> | User[] = [];
-  getBy(id: string): User | undefined {
-    throw new Error("Method not implemented.");
-  }
-  getAll(): User[] {
-    throw new Error("Method not implemented.");
-  }
-  update(data: User): void {
-    throw new Error("Method not implemented.");
-  }
-  add(data: User): void {
-    throw new Error("Method not implemented.");
-  }
-  
-}
+export const storage = InMemoryStorage.getMemoryStorage();

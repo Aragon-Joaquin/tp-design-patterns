@@ -27,7 +27,7 @@ export const authenticateApiKey = (
   }
 
   // Buscar usuario en storage
-  const user = storage.getUserByApiKey(apiKey);
+  const user = storage.user.getByApiKey(apiKey);
   if (!user) {
     return res.status(401).json({
       error: "Usuario no encontrado",

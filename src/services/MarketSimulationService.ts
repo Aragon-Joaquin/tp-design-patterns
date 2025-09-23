@@ -39,7 +39,7 @@ export class MarketSimulationService {
 
   // Actualizar precios de mercado
   private updateMarketPrices(): void {
-    const allMarketData = storage.getAllMarketData();
+    const allMarketData = storage.market.getAll();
 
     allMarketData.forEach((marketData) => {
       // Generar cambio aleatorio de precio
@@ -58,14 +58,14 @@ export class MarketSimulationService {
       marketData.volume += Math.floor(Math.random() * 10000); // Simular volumen
       marketData.timestamp = new Date();
 
-      storage.updateMarketData(marketData);
+      storage.market.update(marketData);
 
       // Actualizar asset correspondiente
-      const asset = storage.getAssetBySymbol(marketData.symbol);
+      const asset = storage.asset.getBySymbol(marketData.symbol);
       if (asset) {
         asset.currentPrice = newPrice;
         asset.lastUpdated = new Date();
-        storage.updateAsset(asset);
+        storage.asset.update(asset);
       }
     });
 
@@ -77,17 +77,17 @@ export class MarketSimulationService {
   private updateAllPortfolioValues(): void {
     // Obtener todos los usuarios y actualizar sus portafolios
     const allUsers = [
-      storage.getUserById("demo_user"),
-      storage.getUserById("admin_user"),
-      storage.getUserById("trader_user"),
+      storage.user.getByUserId("demo_user"),
+      storage.user.getByUserId("admin_user"),
+      storage.user.getByUserId("trader_user"),
     ].filter((user) => user !== undefined);
 
     allUsers.forEach((user) => {
       if (user) {
-        const portfolio = storage.getPortfolioByUserId(user.id);
+        const portfolio = storage.portfolio.getByUserId(user.id);
         if (portfolio && portfolio.holdings.length > 0) {
           this.recalculatePortfolioValues(portfolio);
-          storage.updatePortfolio(portfolio);
+          storage.portfolio.update(portfolio);
         }
       }
     });
@@ -99,7 +99,7 @@ export class MarketSimulationService {
     let totalInvested = 0;
 
     portfolio.holdings.forEach((holding: any) => {
-      const asset = storage.getAssetBySymbol(holding.symbol);
+      const asset = storage.asset.getBySymbol(holding.symbol);
       if (asset) {
         holding.currentValue = holding.quantity * asset.currentPrice;
         const invested = holding.quantity * holding.averagePrice;
@@ -124,7 +124,7 @@ export class MarketSimulationService {
   simulateMarketEvent(eventType: "bull" | "bear" | "crash" | "recovery"): void {
     console.log(`Simulando evento de mercado: ${eventType}`);
 
-    const allMarketData = storage.getAllMarketData();
+    const allMarketData = storage.market.getAll();
 
     allMarketData.forEach((marketData) => {
       let impactFactor = 0;
@@ -154,14 +154,14 @@ export class MarketSimulationService {
       marketData.changePercent = changePercent;
       marketData.timestamp = new Date();
 
-      storage.updateMarketData(marketData);
+      storage.market.update(marketData);
 
       // Actualizar asset
-      const asset = storage.getAssetBySymbol(marketData.symbol);
+      const asset = storage.asset.getBySymbol(marketData.symbol);
       if (asset) {
         asset.currentPrice = newPrice;
         asset.lastUpdated = new Date();
-        storage.updateAsset(asset);
+        storage.asset.update(asset);
       }
     });
 

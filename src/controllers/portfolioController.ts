@@ -6,7 +6,7 @@ export class PortfolioController {
   static async getPortfolio(req: Request, res: Response) {
     try {
       const user = req.user;
-      const portfolio = storage.getPortfolioByUserId(user.id);
+      const portfolio = storage.portfolio.getByUserId(user.id);
 
       if (!portfolio) {
         return res.status(404).json({
@@ -36,7 +36,7 @@ export class PortfolioController {
   static async getPerformance(req: Request, res: Response) {
     try {
       const user = req.user;
-      const portfolio = storage.getPortfolioByUserId(user.id);
+      const portfolio = storage.portfolio.getByUserId(user.id);
 
       if (!portfolio) {
         return res.status(404).json({
@@ -58,7 +58,7 @@ export class PortfolioController {
           sectors: [
             ...new Set(
               portfolio.holdings.map((h) => {
-                const asset = storage.getAssetBySymbol(h.symbol);
+                const asset = storage.asset.getBySymbol(h.symbol);
                 return asset ? asset.sector : "Unknown";
               })
             ),

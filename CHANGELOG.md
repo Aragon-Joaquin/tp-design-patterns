@@ -1,3 +1,11 @@
+# 22 de septiembre de 2025
+
+#### Changed:
+- **controllers/ + services/ + middleware/**: actualizado segun el patron repository.
+- **patterns/repository**: creada carpeta repository + patrones
+- **storage.ts**: aplicado repository pattern (mi referencia https://doeken.org/blog/repository-pattern de php) + singleton
+
+---
 # 21 de septiembre de 2025
 
 #### Changed:

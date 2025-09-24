@@ -1,10 +1,12 @@
+import { IUserToleranceRisk } from "../patterns";
+
 export class User {
   id: string;
   username: string;
   email: string;
   apiKey: string;
   balance: number;
-  riskTolerance: "low" | "medium" | "high";
+  riskTolerance: IUserToleranceRisk;
   createdAt: Date;
 
   constructor(
@@ -13,7 +15,7 @@ export class User {
     email: string,
     apiKey: string,
     balance: number,
-    riskTolerance: "low" | "medium" | "high"
+    riskTolerance: IUserToleranceRisk
   ) {
     this.id = id;
     this.username = username;
@@ -35,4 +37,8 @@ export class User {
   addBalance(amount: number): void {
     this.balance += amount;
   }
+
+  changeTolerance = (volatility: number) => this.riskTolerance.changeTolerance(this, volatility)
+
+  setRiskTolerance = (risk: IUserToleranceRisk) => this.riskTolerance = risk
 }

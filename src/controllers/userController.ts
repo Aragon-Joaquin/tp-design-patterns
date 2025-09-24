@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { storage } from "../utils/storage";
+import { User } from "../models";
+import { HighUserTolerance, IUserToleranceRisk, LowUserTolerance, MediumUserTolerance, UserToleranceTypes } from "../patterns";
 
 export class UserController {
   static async getProfile(req: Request, res: Response) {
     try {
-      const user = req.user;
+      const user = req.user as User;
 
       res.json({
         user: {
@@ -12,7 +14,7 @@ export class UserController {
           username: user.username,
           email: user.email,
           balance: user.balance,
-          riskTolerance: user.riskTolerance,
+          riskTolerance: user.riskTolerance.getTolerance(),
           createdAt: user.createdAt,
         },
       });
@@ -26,7 +28,7 @@ export class UserController {
 
   static async updateProfile(req: Request, res: Response) {
     try {
-      const user = req.user;
+      const user = req.user as User;
       const { email, riskTolerance } = req.body;
 
       // Validaciones básicas
@@ -46,7 +48,12 @@ export class UserController {
 
       // Actualizar campos
       if (email) user.email = email;
-      if (riskTolerance) user.riskTolerance = riskTolerance;
+      if (riskTolerance) {
+        user.riskTolerance =
+          riskTolerance === UserToleranceTypes.HIGH ? new HighUserTolerance()
+            : riskTolerance === UserToleranceTypes.LOW ? new LowUserTolerance()
+              : new MediumUserTolerance();
+      }
 
       storage.user.update(user);
 
@@ -57,7 +64,7 @@ export class UserController {
           username: user.username,
           email: user.email,
           balance: user.balance,
-          riskTolerance: user.riskTolerance,
+          riskTolerance: user.riskTolerance.getTolerance(),
         },
       });
     } catch (error) {

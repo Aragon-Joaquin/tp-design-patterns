@@ -3,7 +3,7 @@
 #### done:
   1) applied chain of responsibility in index.ts
   2) applied repository + singleton in storage.ts
-  3) 
+  3) applied some state pattern in models/riskAnalysis + models/UserModel
 
 
 #### observations:

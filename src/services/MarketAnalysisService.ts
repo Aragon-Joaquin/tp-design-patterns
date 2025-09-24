@@ -214,36 +214,17 @@ export class MarketAnalysisService {
         (h) => h.symbol === asset.symbol
       );
 
+      //!applied state pattern
       if (!hasHolding) {
-        let recommendation = "";
-        let priority = 0;
+        user.changeTolerance(this.getAssetVolatility(asset.symbol))
 
-        if (
-          user.riskTolerance === "low" &&
-          this.getAssetVolatility(asset.symbol) < 50
-        ) {
-          recommendation =
-            "Activo de bajo riesgo recomendado para tu perfil conservador";
-          priority = 1;
-        } else if (
-          user.riskTolerance === "high" &&
-          this.getAssetVolatility(asset.symbol) > 60
-        ) {
-          recommendation =
-            "Activo de alto crecimiento potencial para tu perfil agresivo";
-          priority = 2;
-        } else if (user.riskTolerance === "medium") {
-          recommendation = "Activo balanceado adecuado para tu perfil moderado";
-          priority = 1;
-        }
-
-        if (recommendation) {
+        if (user.riskTolerance.recommendation) {
           recommendations.push({
             symbol: asset.symbol,
             name: asset.name,
             currentPrice: asset.currentPrice,
-            recommendation: recommendation,
-            priority: priority,
+            recommendation: user.riskTolerance.recommendation,
+            priority: user.riskTolerance.priority,
             riskLevel:
               this.getAssetVolatility(asset.symbol) > 60 ? "high" : "medium",
           });

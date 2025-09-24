@@ -12,3 +12,4 @@ export * from './repository/userRepository'
 
 //state
 export * from './state/portfolioRisk'
+export * from './state/userToleranceRisk'

@@ -6,7 +6,7 @@ import {
   MarketData,
 } from "../models";
 import { config } from "../config";
-import { AssetRepository, MarketRepository, OrderRepository, PortfolioRepository, TransactionRepository, UserRepository } from "../patterns";
+import { AssetRepository, HighUserTolerance, LowUserTolerance, MarketRepository, MediumUserTolerance, OrderRepository, PortfolioRepository, TransactionRepository, UserRepository } from "../patterns";
 
 
 // Base de datos simulada en memoria (se pierde al reiniciar)
@@ -43,7 +43,7 @@ class InMemoryStorage {
         "demo@example.com",
         "demo-key-123",
         10000.0,
-        "medium"
+        new MediumUserTolerance()
       ),
       new User(
         "admin_user",
@@ -51,7 +51,7 @@ class InMemoryStorage {
         "admin@example.com",
         "admin-key-456",
         50000.0,
-        "high"
+        new HighUserTolerance()
       ),
       new User(
         "trader_user",
@@ -59,7 +59,7 @@ class InMemoryStorage {
         "trader@example.com",
         "trader-key-789",
         25000.0,
-        "low"
+        new LowUserTolerance()
       ),
     ]
 

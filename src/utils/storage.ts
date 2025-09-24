@@ -89,10 +89,10 @@ class InMemoryStorage {
     // Inicializar repositorios
     this.user = new UserRepository(usersMap)
     this.asset = new AssetRepository(assetsMap)
+    this.market = new MarketRepository(marketMap)
+    this.portfolio = new PortfolioRepository(portfolioMap)
     this.transaction = new TransactionRepository()
-    this.order = new OrderRepository();
-    this.portfolio = new PortfolioRepository();
-    this.market = new MarketRepository();
+    this.order = new OrderRepository()
   }
 
 }

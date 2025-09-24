@@ -1,3 +1,12 @@
+# 23 de septiembre de 2025
+
+#### Changed:
+- **patterns/state/**: añadido state pattern solo para portfolioRisk por ahora
+- **models/**: algunos modelos acomodados
+- **services/MarketAnalysisService**: refactorizado con el nuevo patron
+
+---
+
 # 22 de septiembre de 2025
 
 #### Changed:
@@ -6,6 +15,7 @@
 - **storage.ts**: aplicado repository pattern (mi referencia https://doeken.org/blog/repository-pattern de php) + singleton
 
 ---
+
 # 21 de septiembre de 2025
 
 #### Changed:

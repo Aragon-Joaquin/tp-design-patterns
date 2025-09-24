@@ -1,5 +1,6 @@
 // Servicio de análisis de mercado
-import { MarketData, Asset, Portfolio, RiskAnalysis } from "../models/types";
+import { MarketData, Asset, Portfolio, RiskAnalysis } from "../models";
+import { IPortfolioRisk, RiskTypes } from "../patterns";
 import { storage } from "../utils/storage";
 
 export class MarketAnalysisService {
@@ -10,32 +11,22 @@ export class MarketAnalysisService {
       throw new Error("Portafolio no encontrado");
     }
 
-    // Cálculo básico de diversificación
+    // Cálculo básico de diversificación y volatilidad
     const diversificationScore = this.calculateDiversificationScore(portfolio);
-
-    // Cálculo básico de volatilidad
     const volatilityScore = this.calculateVolatilityScore(portfolio);
 
-    // Determinar nivel de riesgo general
-    let portfolioRisk: "low" | "medium" | "high";
-    if (volatilityScore < 30 && diversificationScore > 70) {
-      portfolioRisk = "low";
-    } else if (volatilityScore < 60 && diversificationScore > 40) {
-      portfolioRisk = "medium";
-    } else {
-      portfolioRisk = "high";
-    }
-
     // Generar recomendaciones básicas
+    // aplicado state pattern
+    const riskAnalysis = new RiskAnalysis(userId);
+
     const recommendations = this.generateRiskRecommendations(
       diversificationScore,
       volatilityScore,
-      portfolioRisk
+      riskAnalysis.portfolioRisk
     );
 
-    const riskAnalysis = new RiskAnalysis(userId);
     riskAnalysis.updateRisk(
-      portfolioRisk,
+      volatilityScore,
       diversificationScore,
       recommendations
     );
@@ -115,7 +106,7 @@ export class MarketAnalysisService {
   private generateRiskRecommendations(
     diversificationScore: number,
     volatilityScore: number,
-    riskLevel: string
+    riskLevel: IPortfolioRisk
   ): string[] {
     const recommendations: string[] = [];
 
@@ -131,7 +122,7 @@ export class MarketAnalysisService {
       );
     }
 
-    if (riskLevel === "high") {
+    if (riskLevel.getRisk() === RiskTypes.HIGH) {
       recommendations.push(
         "Nivel de riesgo alto detectado, revisa tu estrategia de inversión"
       );

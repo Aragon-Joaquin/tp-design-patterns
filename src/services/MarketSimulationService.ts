@@ -1,5 +1,5 @@
 // Servicio de simulación de mercado
-import { MarketData, Asset } from "../models/types";
+import { MarketData, Asset } from "../models";
 import { storage } from "../utils/storage";
 import { config } from "../config";
 

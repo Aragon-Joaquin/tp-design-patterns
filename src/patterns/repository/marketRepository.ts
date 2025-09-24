@@ -1,4 +1,4 @@
-import { MarketData, Portfolio } from "../../models/portfolio";
+import { MarketData, Portfolio } from "../../models/portfolioModel";
 
 interface IMarketRepository {
     getAll(): MarketData[]

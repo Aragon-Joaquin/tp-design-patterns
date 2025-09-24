@@ -1,3 +1,4 @@
+//chain of responsibility
 export * from './chainOfResponsibility/middlewareDecorator'
 export * from './chainOfResponsibility/handlers'
 
@@ -8,3 +9,6 @@ export * from './repository/orderRepository'
 export * from './repository/portfolioRepository'
 export * from './repository/transactionRepository'
 export * from './repository/userRepository'
+
+//state
+export * from './state/portfolioRisk'

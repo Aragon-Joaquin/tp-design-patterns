@@ -2,7 +2,7 @@
 import {
   Transaction,
   Portfolio,
-} from "../models/types";
+} from "../models";
 import { storage } from "../utils/storage";
 import { config } from "../config";
 

@@ -4,7 +4,7 @@ import {
   Asset,
   Portfolio,
   MarketData,
-} from "../models/types";
+} from "../models";
 import { config } from "../config";
 import { AssetRepository, MarketRepository, OrderRepository, PortfolioRepository, TransactionRepository, UserRepository } from "../patterns";
 

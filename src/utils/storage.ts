@@ -6,8 +6,8 @@ import {
   MarketData,
 } from "../models";
 import { config } from "../config";
-import { AssetRepository, HighUserTolerance, LowUserTolerance, MarketRepository, MediumUserTolerance, OrderRepository, PortfolioRepository, TransactionRepository, UserRepository } from "../patterns";
-
+import { AssetRepository, MarketRepository, OrderRepository, PortfolioRepository, TransactionRepository, UserRepository } from "../patterns/repository";
+import { HighUserTolerance, LowUserTolerance, MediumUserTolerance } from "../patterns/state";
 
 // Base de datos simulada en memoria (se pierde al reiniciar)
 //! repository + singleton

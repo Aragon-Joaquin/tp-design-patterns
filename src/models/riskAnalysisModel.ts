@@ -1,4 +1,4 @@
-import { IPortfolioRisk, MediumPortfolioRisk } from "../patterns";
+import { IPortfolioRisk, MediumPortfolioRisk } from "../patterns/state";
 
 export class RiskAnalysis {
     userId: string;

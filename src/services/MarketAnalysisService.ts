@@ -1,6 +1,6 @@
 // Servicio de análisis de mercado
 import { MarketData, Asset, Portfolio, RiskAnalysis } from "../models";
-import { IPortfolioRisk, RiskTypes } from "../patterns";
+import { IPortfolioRisk, RiskTypes } from "../patterns/state";
 import { storage } from "../utils/storage";
 
 export class MarketAnalysisService {

@@ -1,4 +1,4 @@
-import { IUserToleranceRisk } from "../patterns";
+import { IUserToleranceRisk } from "../patterns/state";
 
 export class User {
   id: string;

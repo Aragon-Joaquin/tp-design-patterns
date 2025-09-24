@@ -7,7 +7,7 @@ import {
   PortfolioController,
   AnalysisController,
 } from "../controllers";
-import { AuthHandler, muxRouter, ValidateTradeHandler } from "../patterns";
+import { AuthHandler, muxRouter, ValidateTradeHandler } from "../patterns/chainOfResponsibility";
 
 //* este va a ser nuestro nuevo Router. el nombre muxRouter fue inspirado en el lenguaje "golang"
 const router = new muxRouter()
@@ -43,7 +43,7 @@ router.Get("/analysis/recommendations", AnalysisController.getRecommendations);
 
 //! TODAS ESTAS RUTAS REQUIREN AUTENTICACION + VALIDACION DE DATOS!
 // Rutas de trading
-authHandler.setNext(tradeDataHandler); 
+authHandler.setNext(tradeDataHandler);
 
 router.Post("/trading/buy", TradingController.buyAsset);
 router.Post("/trading/sell", TradingController.sellAsset);

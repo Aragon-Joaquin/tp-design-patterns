@@ -1,4 +1,4 @@
-import { Portfolio } from "../../models/portfolioModel";
+import { Portfolio } from "../../models";
 
 interface IPortfolioRepository {
     getByUserId(userId: string): Portfolio | undefined

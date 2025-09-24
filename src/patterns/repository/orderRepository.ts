@@ -1,4 +1,5 @@
-import { Order } from "../../models/portfolioModel";
+import { Order } from "../../models";
+
 
 interface IOrderRepository {
     add(order: Order): void

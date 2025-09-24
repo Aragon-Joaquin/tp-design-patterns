@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { storage } from "../utils/storage";
 import { User } from "../models";
-import { HighUserTolerance, IUserToleranceRisk, LowUserTolerance, MediumUserTolerance, UserToleranceTypes } from "../patterns";
+import { HighUserTolerance, LowUserTolerance, MediumUserTolerance, UserToleranceTypes } from "../patterns/state";
 
 export class UserController {
   static async getProfile(req: Request, res: Response) {

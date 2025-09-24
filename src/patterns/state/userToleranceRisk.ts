@@ -18,6 +18,7 @@ export interface IUserToleranceRisk {
 
 //! state user tolerance
 export class LowUserTolerance implements IUserToleranceRisk {
+    constructor() { }
     recommendation: string = "Activo de bajo riesgo recomendado para tu perfil conservador";
     priority: number = 1;
 
@@ -30,6 +31,7 @@ export class LowUserTolerance implements IUserToleranceRisk {
 }
 
 export class MediumUserTolerance implements IUserToleranceRisk {
+    constructor() { }
     recommendation: string = "Activo balanceado adecuado para tu perfil moderado";
     priority: number = 1
 
@@ -42,6 +44,7 @@ export class MediumUserTolerance implements IUserToleranceRisk {
 }
 
 export class HighUserTolerance implements IUserToleranceRisk {
+    constructor() { }
     recommendation: string = "Activo de alto crecimiento potencial para tu perfil agresivo"
     priority: number = 2
 

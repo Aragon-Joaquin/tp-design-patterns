@@ -1,5 +1,4 @@
-import { Transaction } from "../../models/transactionModel"
-
+import { Transaction } from "../../models";
 
 interface ITransactionRepository {
     add(transaction: Transaction): void

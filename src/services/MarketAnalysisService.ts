@@ -18,6 +18,7 @@ export class MarketAnalysisService {
     // Generar recomendaciones básicas
     // aplicado state pattern
     const riskAnalysis = new RiskAnalysis(userId);
+    riskAnalysis.changeRiskPortfolio(volatilityScore, diversificationScore)
 
     const recommendations = this.generateRiskRecommendations(
       diversificationScore,
@@ -26,7 +27,6 @@ export class MarketAnalysisService {
     );
 
     riskAnalysis.updateRisk(
-      volatilityScore,
       diversificationScore,
       recommendations
     );

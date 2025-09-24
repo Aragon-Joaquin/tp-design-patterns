@@ -16,15 +16,15 @@ export class RiskAnalysis {
     }
 
     updateRisk(
-        volability: number,
         diversificationScore: number,
         recommendations: string[]
     ): void {
-        this.portfolioRisk.changeRisk(this, volability, diversificationScore)
         this.diversificationScore = diversificationScore;
         this.recommendations = recommendations;
         this.calculatedAt = new Date();
     }
 
     setRiskState = (newP: IPortfolioRisk) => this.portfolioRisk = newP
+
+    changeRiskPortfolio = (v: number, d: number) => this.portfolioRisk.changeRisk(this, v, d)
 }

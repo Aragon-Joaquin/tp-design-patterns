@@ -1,11 +1,11 @@
 import { Portfolio } from "../../models";
 import { ExcludeFirstParam } from "../../types";
 import { storage } from "../../utils/storage";
-import { IPortfolioActionStrategy } from "../strategy";
+import { IPortfolioActionStrategy, updatePortfolioAfterBuy } from "../strategy";
 
 //! facade + strategy
 export class PortfolioFacade {
-    constructor(private strategy: IPortfolioActionStrategy) { }
+    constructor(private strategy: IPortfolioActionStrategy = new updatePortfolioAfterBuy) { }
 
     // Recalcular valores del portafolio
     recalculatePortfolioValues(portfolio: Portfolio): void {

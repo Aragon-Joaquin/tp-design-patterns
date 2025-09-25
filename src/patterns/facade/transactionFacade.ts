@@ -1,12 +1,12 @@
 import { Transaction, User } from "../../models";
 import { storage } from "../../utils/storage";
-import { BuyTransaction, ITransactionStrategy, updatePortfolioAfterBuy, updatePortfolioAfterSell } from "../strategy";
+import { BuyTransaction, ITransactionStrategy } from "../strategy";
 import { PortfolioFacade } from "./portfolioFacade";
 
 //! facade + strategy
 export class TransactionFacade {
-    private portFacade = new PortfolioFacade(new updatePortfolioAfterSell)
-    private transactionStrat: ITransactionStrategy = new BuyTransaction
+    private portFacade = new PortfolioFacade()
+    constructor(private transactionStrat: ITransactionStrategy = new BuyTransaction) { }
 
     createTransaction(user: User, type: "buy" | "sell", symbol: string, price: number, quantity: number, fees: number): Transaction {
         return new Transaction(
@@ -27,8 +27,8 @@ export class TransactionFacade {
         storage.user.update(user);
 
         //! we exec strategy
-        if (type === "buy") this.portFacade.changeStrategy(new updatePortfolioAfterBuy)
-        else this.portFacade.changeStrategy(new updatePortfolioAfterSell)
+        // if (type === "buy") this.portFacade.changeStrategy(new updatePortfolioAfterBuy)
+        // else this.portFacade.changeStrategy(new updatePortfolioAfterSell)
         this.portFacade.execStrategy(user.id, symbol, quantity, executionPrice);
 
         storage.transaction.add(transaction);

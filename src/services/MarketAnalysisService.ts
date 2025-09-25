@@ -1,9 +1,11 @@
 // Servicio de análisis de mercado
 import { MarketData, Asset, Portfolio, RiskAnalysis } from "../models";
-import { IPortfolioRisk, RiskTypes } from "../patterns/state";
+import { AssetsFacade, } from "../patterns/facade";
 import { storage } from "../utils/storage";
 
 export class MarketAnalysisService {
+  private assetsFaca = new AssetsFacade()
+
   // Análisis de riesgo del portafolio
   analyzePortfolioRisk(userId: string): RiskAnalysis {
     const portfolio = storage.portfolio.getByUserId(userId);
@@ -11,16 +13,14 @@ export class MarketAnalysisService {
       throw new Error("Portafolio no encontrado");
     }
 
-    // Cálculo básico de diversificación y volatilidad
-    const diversificationScore = this.calculateDiversificationScore(portfolio);
-    const volatilityScore = this.calculateVolatilityScore(portfolio);
+    const diversificationScore = this.assetsFaca.calculateDiversification(portfolio);
+    const volatilityScore = this.assetsFaca.calculateVolatility(portfolio);
 
-    // Generar recomendaciones básicas
-    // aplicado state pattern
+    //! aplicado state pattern
     const riskAnalysis = new RiskAnalysis(userId);
     riskAnalysis.changeRiskPortfolio(volatilityScore, diversificationScore)
 
-    const recommendations = this.generateRiskRecommendations(
+    const recommendations = this.assetsFaca.generateRiskRecommendations(
       diversificationScore,
       volatilityScore,
       riskAnalysis.portfolioRisk
@@ -34,136 +34,17 @@ export class MarketAnalysisService {
     return riskAnalysis;
   }
 
-  // Calcular score de diversificación - Algoritmo simplificado
-  private calculateDiversificationScore(portfolio: Portfolio): number {
-    if (portfolio.holdings.length === 0) return 0;
-
-    // Contar sectores únicos
-    const sectors = new Set<string>();
-    portfolio.holdings.forEach((holding) => {
-      const asset = storage.asset.getBySymbol(holding.symbol);
-      if (asset) {
-        sectors.add(asset.sector);
-      }
-    });
-
-    // Score basado en número de sectores y distribución
-    const sectorCount = sectors.size;
-    const maxSectors = 5; // Número máximo de sectores considerados
-    const sectorScore = Math.min(sectorCount / maxSectors, 1) * 50;
-
-    // Score basado en distribución de pesos
-    const totalValue = portfolio.totalValue;
-    let concentrationPenalty = 0;
-
-    portfolio.holdings.forEach((holding) => {
-      const weight = holding.currentValue / totalValue;
-      if (weight > 0.3) {
-        // Penalizar concentraciones > 30%
-        concentrationPenalty += (weight - 0.3) * 100;
-      }
-    });
-
-    const distributionScore = Math.max(50 - concentrationPenalty, 0);
-
-    return Math.min(sectorScore + distributionScore, 100);
-  }
-
-  // Calcular score de volatilidad - Algoritmo básico
-  private calculateVolatilityScore(portfolio: Portfolio): number {
-    if (portfolio.holdings.length === 0) return 0;
-
-    let weightedVolatility = 0;
-    const totalValue = portfolio.totalValue;
-
-    portfolio.holdings.forEach((holding) => {
-      const weight = holding.currentValue / totalValue;
-      const assetVolatility = this.getAssetVolatility(holding.symbol);
-      weightedVolatility += weight * assetVolatility;
-    });
-
-    return Math.min(weightedVolatility, 100);
-  }
-
-  // Obtener volatilidad de un activo - Datos simulados
-  private getAssetVolatility(symbol: string): number {
-    // Simulación básica de volatilidad por sector
-    const asset = storage.asset.getBySymbol(symbol);
-    if (!asset) return 50; // Volatilidad por defecto
-
-    const volatilityBySector: { [key: string]: number } = {
-      Technology: 65,
-      Healthcare: 45,
-      Financial: 55,
-      Automotive: 70,
-      "E-commerce": 60,
-    };
-
-    return volatilityBySector[asset.sector] || 50;
-  }
-
-  // Generar recomendaciones
-  private generateRiskRecommendations(
-    diversificationScore: number,
-    volatilityScore: number,
-    riskLevel: IPortfolioRisk
-  ): string[] {
-    const recommendations: string[] = [];
-
-    if (diversificationScore < 40) {
-      recommendations.push(
-        "Considera diversificar tu portafolio invirtiendo en diferentes sectores"
-      );
-    }
-
-    if (volatilityScore > 70) {
-      recommendations.push(
-        "Tu portafolio tiene alta volatilidad, considera añadir activos más estables"
-      );
-    }
-
-    if (riskLevel.getRisk() === RiskTypes.HIGH) {
-      recommendations.push(
-        "Nivel de riesgo alto detectado, revisa tu estrategia de inversión"
-      );
-    }
-
-    if (diversificationScore > 80 && volatilityScore < 30) {
-      recommendations.push(
-        "Excelente diversificación y bajo riesgo, mantén esta estrategia"
-      );
-    }
-
-    // Recomendaciones genéricas si no hay específicas
-    if (recommendations.length === 0) {
-      recommendations.push(
-        "Tu portafolio se ve balanceado, continúa monitoreando regularmente"
-      );
-    }
-
-    return recommendations;
-  }
-
   // Análisis técnico básico
   performTechnicalAnalysis(symbol: string): any {
     const marketData = storage.market.getBySymbol(symbol);
-    if (!marketData) {
-      throw new Error("Datos de mercado no encontrados");
-    }
+    if (!marketData) throw new Error("Datos de mercado no encontrados");
 
-    // Simulación de indicadores técnicos básicos
-    const sma20 = this.calculateSimpleMovingAverage(symbol, 20);
-    const sma50 = this.calculateSimpleMovingAverage(symbol, 50);
-    const rsi = this.calculateRSI(symbol);
+    const sma20 = this.assetsFaca.calculateSimpleMovingAverage(symbol, 20);
+    const sma50 = this.assetsFaca.calculateSimpleMovingAverage(symbol, 50);
+    const rsi = this.assetsFaca.calculateRSI(symbol);
 
-    let signal: "buy" | "sell" | "hold" = "hold";
-
-    // Lógica simple de señales
-    if (marketData.price > sma20 && sma20 > sma50 && rsi < 70) {
-      signal = "buy";
-    } else if (marketData.price < sma20 && sma20 < sma50 && rsi > 30) {
-      signal = "sell";
-    }
+    //! state pattern
+    this.assetsFaca.changeSignal(marketData.price, sma20, sma50, rsi)
 
     return {
       symbol: symbol,
@@ -171,28 +52,9 @@ export class MarketAnalysisService {
       sma20: sma20,
       sma50: sma50,
       rsi: rsi,
-      signal: signal,
+      signal: this.assetsFaca.getSignal(),
       timestamp: new Date(),
     };
-  }
-
-  // Calcular SMA - Simulación básica
-  private calculateSimpleMovingAverage(
-    symbol: string,
-    periods: number
-  ): number {
-    const marketData = storage.market.getBySymbol(symbol);
-    if (!marketData) return 0;
-
-    // Simulación: SMA = precio actual +/- variación aleatoria
-    const randomVariation = (Math.random() - 0.5) * 0.1; // +/- 5%
-    return marketData.price * (1 + randomVariation);
-  }
-
-  // Calcular RSI - Simulación básica
-  private calculateRSI(symbol: string): number {
-    // Simulación: RSI aleatorio entre 20 y 80
-    return 20 + Math.random() * 60;
   }
 
   // Generar recomendaciones de inversión - Lógica básica
@@ -206,7 +68,6 @@ export class MarketAnalysisService {
 
     const recommendations: any[] = [];
 
-    // Recomendaciones basadas en tolerancia al riesgo
     const allAssets = storage.asset.getAll();
 
     allAssets.forEach((asset) => {
@@ -216,7 +77,7 @@ export class MarketAnalysisService {
 
       //!applied state pattern
       if (!hasHolding) {
-        user.changeTolerance(this.getAssetVolatility(asset.symbol))
+        user.changeTolerance(this.assetsFaca.getAssetVolatility(asset.symbol))
 
         if (user.riskTolerance.recommendation) {
           recommendations.push({
@@ -226,13 +87,12 @@ export class MarketAnalysisService {
             recommendation: user.riskTolerance.recommendation,
             priority: user.riskTolerance.priority,
             riskLevel:
-              this.getAssetVolatility(asset.symbol) > 60 ? "high" : "medium",
+              this.assetsFaca.getAssetVolatility(asset.symbol) > 60 ? "high" : "medium",
           });
         }
       }
     });
 
-    // Ordenar por prioridad
     return recommendations.sort((a, b) => b.priority - a.priority).slice(0, 5);
   }
 }

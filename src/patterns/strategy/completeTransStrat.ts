@@ -1,7 +1,6 @@
 import { Transaction, User } from "../../models";
 import { storage } from "../../utils/storage";
-import { PortfolioFacade, TransactionFacade } from "../facade";
-import { updatePortfolioAfterBuy, updatePortfolioAfterSell } from "./portfolioUpdateStrat";
+import { CommissionFacade, TransactionFacade } from "../facade";
 
 export interface ITransactionStrategy {
     executeOrder(
@@ -12,22 +11,21 @@ export interface ITransactionStrategy {
     ): Promise<Transaction>
 }
 
-export class BuyTransaction implements ITransactionStrategy {
-    private portFacade = new PortfolioFacade(new updatePortfolioAfterBuy)
+abstract class transactionStrategy implements ITransactionStrategy {
+    protected commissionFacade = new CommissionFacade
 
-    private completeTransaction(transFacade: TransactionFacade, transaction: Transaction, user: User, totalCost: number, symbol: string, quantity: number, executionPrice: number): void {
-        transaction.complete();
+    abstract executeOrder(
+        transFacade: TransactionFacade,
+        userId: string,
+        symbol: string,
+        quantity: number
+    ): Promise<Transaction>
+}
 
-        user.deductBalance(totalCost);
-        storage.user.update(user);
+//! strategies below
 
-        //! we exec strategy
-        this.portFacade.execStrategy(user.id, symbol, quantity, executionPrice);
-
-        storage.transaction.add(transaction);
-
-        transFacade.simulateMarketImpact(symbol, quantity, "buy");
-    }
+export class BuyTransaction extends transactionStrategy {
+    private TYPE = "buy" as const
 
     async executeOrder(
         transFacade: TransactionFacade,
@@ -42,37 +40,20 @@ export class BuyTransaction implements ITransactionStrategy {
         if (!asset) throw new Error("Activo no encontrado");
 
         const executionPrice = asset.currentPrice
-        const grossAmount = quantity * executionPrice;
-        const fees = transFacade.commissionFacade.calculateFees(grossAmount, "buy");
-        const totalCost = grossAmount + fees;
+        const [fees, totalCost] = this.commissionFacade.calculateFees(quantity, executionPrice, this.TYPE);
 
         if (!user.canAfford(totalCost)) throw new Error("Fondos insuficientes");
 
-        const transaction = transFacade.createTransaction(user, "buy", symbol, executionPrice, quantity, fees)
-
-        this.completeTransaction(transFacade, transaction, user, totalCost, symbol, quantity, executionPrice)
+        //facade methods
+        const transaction = transFacade.createTransaction(user, this.TYPE, symbol, executionPrice, quantity, fees)
+        transFacade.completeTransaction(this.TYPE, transaction, user, totalCost, symbol, quantity, executionPrice)
 
         return transaction;
     }
 }
 
-export class SellTransaction implements ITransactionStrategy {
-    private portFacade = new PortfolioFacade(new updatePortfolioAfterSell)
-
-    private completeTransaction(transFacade: TransactionFacade, transaction: Transaction, user: User, totalCost: number, symbol: string, quantity: number, executionPrice: number): void {
-        transaction.complete();
-
-        user.deductBalance(totalCost);
-        storage.user.update(user);
-
-        //! we exec strategy
-        this.portFacade.execStrategy(user.id, symbol, quantity, executionPrice);
-
-        storage.transaction.add(transaction);
-
-        transFacade.simulateMarketImpact(symbol, quantity, "sell");
-    }
-
+export class SellTransaction extends transactionStrategy {
+    private TYPE = "sell" as const
 
     async executeOrder(
         transFacade: TransactionFacade,
@@ -93,14 +74,12 @@ export class SellTransaction implements ITransactionStrategy {
         if (!holding || holding.quantity < quantity) throw new Error("No tienes suficientes activos para vender");
 
         const executionPrice = asset.currentPrice;
+        const [fees, totalCost] = this.commissionFacade.calculateFees(quantity, executionPrice, this.TYPE);
 
-        const grossAmount = quantity * executionPrice;
-        const fees = transFacade.commissionFacade.calculateFees(grossAmount, "sell");
-        const totalCost = grossAmount - fees;
+        //facade methods
+        const transaction = transFacade.createTransaction(user, this.TYPE, symbol, executionPrice, quantity, fees)
+        transFacade.completeTransaction(this.TYPE, transaction, user, totalCost, symbol, quantity, executionPrice)
 
-        const transaction = transFacade.createTransaction(user, "sell", symbol, executionPrice, quantity, fees)
-
-        this.completeTransaction(transFacade, transaction, user, totalCost, symbol, quantity, executionPrice)
         return transaction;
     }
 }

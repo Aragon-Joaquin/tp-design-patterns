@@ -1,15 +1,52 @@
 import { Transaction, User } from "../../models";
 import { storage } from "../../utils/storage";
-import { BuyTransaction, ITransactionStrategy } from "../strategy";
-import { CommissionFacade } from "./tradingService";
+import { BuyTransaction, ITransactionStrategy, updatePortfolioAfterBuy, updatePortfolioAfterSell } from "../strategy";
+import { PortfolioFacade } from "./portfolioFacade";
 
 //! facade + strategy
 export class TransactionFacade {
-    public commissionFacade = new CommissionFacade
-    private transactionStrat: ITransactionStrategy = new BuyTransaction()
+    private portFacade = new PortfolioFacade(new updatePortfolioAfterSell)
+    private transactionStrat: ITransactionStrategy = new BuyTransaction
+
+    createTransaction(user: User, type: "buy" | "sell", symbol: string, price: number, quantity: number, fees: number): Transaction {
+        return new Transaction(
+            this.generateTransactionId(),
+            user.id,
+            type,
+            symbol,
+            quantity,
+            price,
+            fees
+        );
+    }
+
+    completeTransaction(type: "buy" | "sell", transaction: Transaction, user: User, totalCost: number, symbol: string, quantity: number, executionPrice: number): void {
+        transaction.complete();
+
+        user.deductBalance(totalCost);
+        storage.user.update(user);
+
+        //! we exec strategy
+        if (type === "buy") this.portFacade.changeStrategy(new updatePortfolioAfterBuy)
+        else this.portFacade.changeStrategy(new updatePortfolioAfterSell)
+        this.portFacade.execStrategy(user.id, symbol, quantity, executionPrice);
+
+        storage.transaction.add(transaction);
+
+        this.simulateMarketImpact(symbol, quantity, type);
+    }
+
+
+    executeOrder = async (userID: string, symbol: string, quantity: number) => await this.transactionStrat.executeOrder(this, userID, symbol, quantity)
+    changeStrategy = (t: ITransactionStrategy) => this.transactionStrat = t
+
+    // Generar ID único para transacciones
+    private generateTransactionId(): string {
+        return "txn_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+    }
 
     // Simulación de impacto en el mercado después de una operación
-    simulateMarketImpact(
+    private simulateMarketImpact(
         symbol: string,
         quantity: number,
         action: "buy" | "sell"
@@ -41,26 +78,5 @@ export class TransactionFacade {
         }
 
         storage.market.update(marketData);
-    }
-
-    createTransaction(user: User, type: "buy" | "sell", symbol: string, price: number, quantity: number, fees: number): Transaction {
-        return new Transaction(
-            this.generateTransactionId(),
-            user.id,
-            type,
-            symbol,
-            quantity,
-            price,
-            fees
-        );
-    }
-
-
-    executeOrder = async (userID: string, symbol: string, quantity: number) => await this.transactionStrat.executeOrder(this, userID, symbol, quantity)
-    changeStrategy = (t: ITransactionStrategy) => this.transactionStrat = t
-
-    // Generar ID único para transacciones
-    private generateTransactionId(): string {
-        return "txn_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
     }
 }

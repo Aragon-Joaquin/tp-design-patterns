@@ -1,3 +1,13 @@
+# 25 de septiembre de 2025
+
+#### Changed:
+- **patterns/state/**: añadido marketSignal
+- **patterns/template/**: añadido calculationTemplate
+- **services/**: todos ya refactorizados
+- **patterns/facade/**: añadido y hecho
+- **patterns/stategy**: mas estrategias
+
+
 # 23 de septiembre de 2025
 
 #### Changed:

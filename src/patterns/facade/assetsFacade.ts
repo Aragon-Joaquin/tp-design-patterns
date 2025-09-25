@@ -5,8 +5,8 @@ import { IMarketSignal, IPortfolioRisk, MarketHoldSignal, RiskTypes } from "../s
 import { CalculateDiversificationScore, CalculateVolatilityScore } from "../template";
 
 export class AssetsFacade {
-    private calcDiversification = new CalculateDiversificationScore()
-    private calcVolatility = new CalculateVolatilityScore()
+    private calcDiversification = new CalculateDiversificationScore(this)
+    private calcVolatility = new CalculateVolatilityScore(this)
     private marketSignal: IMarketSignal = new MarketHoldSignal()
 
     setSignal = (signal: IMarketSignal) => this.marketSignal = signal

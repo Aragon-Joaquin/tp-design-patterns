@@ -1,12 +1,12 @@
 import { config } from "../../config";
 import { storage } from "../../utils/storage";
-import { IMarketSimulation, StartMarketSimulation, StopMarketSimulation } from "../strategy";
+import { IMarketSimulation, StartMarketSimulation } from "../strategy";
 import { marketTypeStrategy } from "../strategy/marketTypeStrat";
 import { PortfolioFacade } from "./portfolioFacade";
 
 export class MarketFacade {
     private portFacade = new PortfolioFacade()
-    constructor(private marketSimStrat: IMarketSimulation = new StartMarketSimulation) { }
+    private marketSimStrat: IMarketSimulation = new StartMarketSimulation(this)
 
     updateMarketPrices(): void {
         const allMarketData = storage.market.getAll();

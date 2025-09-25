@@ -9,6 +9,8 @@ abstract class MarketSimulation implements IMarketSimulation {
     protected isRunning: boolean = false;
     protected intervalId: NodeJS.Timeout | null = null;
 
+    constructor(protected marketFacade = new MarketFacade()) { }
+
     abstract simulateMarket(): void;
 
     getSimulationStatus(): { isRunning: boolean; lastUpdate: Date | null } {
@@ -20,8 +22,6 @@ abstract class MarketSimulation implements IMarketSimulation {
 }
 
 export class StartMarketSimulation extends MarketSimulation {
-    private marketFacade = new MarketFacade()
-
     simulateMarket(): void {
         if (this.isRunning) {
             console.log("La simulación de mercado ya está ejecutándose");

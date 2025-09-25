@@ -20,6 +20,25 @@ export class PortfolioFacade {
         portfolio.calculateTotals();
     }
 
+    // Actualizar todos los portafolios
+    updateAllPortfolioValues(): void {
+        const allUsers = [
+            storage.user.getByUserId("demo_user"),
+            storage.user.getByUserId("admin_user"),
+            storage.user.getByUserId("trader_user"),
+        ].filter((user) => user !== undefined);
+
+        allUsers.forEach((user) => {
+            if (user) {
+                const portfolio = storage.portfolio.getByUserId(user.id);
+                if (portfolio && portfolio.holdings.length > 0) {
+                    this.recalculatePortfolioValues(portfolio);
+                    storage.portfolio.update(portfolio);
+                }
+            }
+        });
+    }
+
     execStrategy = (
         ...args: ExcludeFirstParam<Parameters<IPortfolioActionStrategy["updatePortfolioAfterAction"]>>
     ): void =>

@@ -11,3 +11,8 @@ export const HTTPMethods = {
 export type HTTPMethod = typeof HTTPMethods[keyof typeof HTTPMethods];
 
 export type MiddlewareFunc = (req: Request, res: Response, next: NextFunction) => void
+
+export type ExcludeFirstParam<T extends unknown[]> = T extends [
+    infer _,
+    ...infer Rest
+] ? Rest : never;

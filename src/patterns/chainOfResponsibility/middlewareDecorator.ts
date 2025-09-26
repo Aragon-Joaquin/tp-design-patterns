@@ -2,7 +2,7 @@ import { Router } from "express";
 import { HTTPMethod, HTTPMethods, MiddlewareFunc } from "../../types";
 
 interface MiddlewareHandler {
-    setNext(handler: MiddlewareHandler): void;
+    setNext(handler: MiddlewareHandler): MiddlewareHandler;
     handle(...args: Parameters<MiddlewareFunc>): void;
 }
 

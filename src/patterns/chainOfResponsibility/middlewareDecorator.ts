@@ -1,4 +1,4 @@
-import { Router } from "express"
+import { Router } from "express";
 import { HTTPMethod, HTTPMethods, MiddlewareFunc } from "../../types";
 
 interface MiddlewareHandler {
@@ -9,10 +9,10 @@ interface MiddlewareHandler {
 //! aplicando el patron de responsabilidad de cadenas??? (chain of responsibility)
 export class muxRouter implements MiddlewareHandler {
     public nextHandler: MiddlewareHandler | undefined;
-    public router = Router()
+    private router = Router()
 
     //* ruta madre
-    private searchRoute(method: HTTPMethod, route: string, controller: MiddlewareFunc): ReturnType<typeof Router> {
+    private matchRoute(method: HTTPMethod, route: string, controller: MiddlewareFunc): ReturnType<typeof Router> {
 
         //puedo hacer object.values(HTTPMethods).includes(methods), pero creo que consume mas memoria
         if (!HTTPMethods[method.toUpperCase() as keyof typeof HTTPMethods])
@@ -42,22 +42,22 @@ export class muxRouter implements MiddlewareHandler {
 
     //* endpoints
     public Get(route: string, controller: MiddlewareFunc) {
-        return this.searchRoute(HTTPMethods.GET, route, controller)
+        return this.matchRoute(HTTPMethods.GET, route, controller)
     }
 
     public Post(route: string, controller: MiddlewareFunc) {
-        return this.searchRoute(HTTPMethods.POST, route, controller);
+        return this.matchRoute(HTTPMethods.POST, route, controller)
     }
 
     public Put(route: string, controller: MiddlewareFunc) {
-        return this.searchRoute(HTTPMethods.PUT, route, controller);
+        return this.matchRoute(HTTPMethods.PUT, route, controller)
     }
 
     public Patch(route: string, controller: MiddlewareFunc) {
-        return this.searchRoute(HTTPMethods.PATCH, route, controller);
+        return this.matchRoute(HTTPMethods.PATCH, route, controller)
     }
 
     public Delete(route: string, controller: MiddlewareFunc) {
-        return this.searchRoute(HTTPMethods.DELETE, route, controller);
+        return this.matchRoute(HTTPMethods.DELETE, route, controller)
     }
 }

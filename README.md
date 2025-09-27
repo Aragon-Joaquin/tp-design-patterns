@@ -1,10 +1,9 @@
 ## applied patterns:
 
 #### done:
-  1) applied chain of responsibility in index.ts
-  2) applied repository + singleton in storage.ts
-  3) applied some state pattern in models/riskAnalysis + models/UserModel
-  4) applied template, state, strategy. i lost count now
+  1) applied repository + singleton in storage.ts
+  2) applied some state pattern in models/riskAnalysis + models/UserModel
+  3) applied template, state, strategy. i lost count now
 
 
 #### observations:

@@ -1,3 +1,11 @@
+# 26 de septiembre de 2025
+minor changes for the uml diagram
+
+#### Changed:
+- **patterns/chainOfResponsability/**: deleted.
+
+---
+
 # 25 de septiembre de 2025
 
 #### Changed:
@@ -7,6 +15,7 @@
 - **patterns/facade/**: añadido y hecho
 - **patterns/stategy**: mas estrategias
 
+---
 
 # 23 de septiembre de 2025
 

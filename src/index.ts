@@ -30,7 +30,7 @@ app.use(
 );
 
 // Rutas de la API
-app.use("/api", apiRoutes.router);
+app.use("/api", apiRoutes);
 
 // Ruta de health check
 app.get("/health", (req, res) => {

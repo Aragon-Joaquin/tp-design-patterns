@@ -2,20 +2,14 @@ import { Portfolio } from "../../models";
 import { ExcludeFirstParam } from "../../types";
 import { storage } from "../../utils/storage";
 import { IMarketSignal, IPortfolioRisk, MarketHoldSignal, RiskTypes } from "../state";
-import { CalculateDiversificationScore, CalculateVolatilityScore } from "../template";
 
 export class AssetsFacade {
-    private calcDiversification = new CalculateDiversificationScore(this)
-    private calcVolatility = new CalculateVolatilityScore(this)
     private marketSignal: IMarketSignal = new MarketHoldSignal()
 
     setSignal = (signal: IMarketSignal) => this.marketSignal = signal
     getSignal = () => this.marketSignal.getSignal()
     changeSignal = (...args: ExcludeFirstParam<Parameters<IMarketSignal["changeSignal"]>>) =>
         this.marketSignal.changeSignal(this, ...args)
-
-    calculateVolatility = (port: Portfolio) => this.calcVolatility.calculate(port)
-    calculateDiversification = (port: Portfolio) => this.calcDiversification.calculate(port)
 
     // Obtener volatilidad de un activo - Datos simulados
     getAssetVolatility(symbol: string): number {

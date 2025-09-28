@@ -1,10 +1,13 @@
 // Servicio de análisis de mercado
-import { MarketData, Asset, Portfolio, RiskAnalysis } from "../models";
+import { RiskAnalysis } from "../models";
 import { AssetsFacade, } from "../patterns/facade";
+import { CalculateDiversificationScore, CalculateTemplate, CalculateVolatilityScore } from "../patterns/template";
 import { storage } from "../utils/storage";
 
 export class MarketAnalysisService {
   private assetsFaca = new AssetsFacade()
+  private calcDiversification: CalculateTemplate = new CalculateDiversificationScore()
+  private calcVolatility: CalculateTemplate = new CalculateVolatilityScore()
 
   // Análisis de riesgo del portafolio
   analyzePortfolioRisk(userId: string): RiskAnalysis {
@@ -13,8 +16,8 @@ export class MarketAnalysisService {
       throw new Error("Portafolio no encontrado");
     }
 
-    const diversificationScore = this.assetsFaca.calculateDiversification(portfolio);
-    const volatilityScore = this.assetsFaca.calculateVolatility(portfolio);
+    const diversificationScore = this.calcDiversification.calculate(portfolio)
+    const volatilityScore = this.calcVolatility.calculate(portfolio);
 
     //! aplicado state pattern
     const riskAnalysis = new RiskAnalysis(userId);

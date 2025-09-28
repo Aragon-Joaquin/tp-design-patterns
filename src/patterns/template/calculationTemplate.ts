@@ -1,10 +1,7 @@
 import { Portfolio } from "../../models";
 import { storage } from "../../utils/storage";
 import { AssetsFacade } from "../facade";
-
-abstract class CalculateTemplate {
-    constructor(protected assetsFac: AssetsFacade) { }
-
+export abstract class CalculateTemplate {
     calculate(portfolio: Portfolio): number {
         if (portfolio.holdings.length === 0) return 0;
 
@@ -51,6 +48,8 @@ export class CalculateDiversificationScore extends CalculateTemplate {
 }
 
 export class CalculateVolatilityScore extends CalculateTemplate {
+    private assetsFac = new AssetsFacade()
+
     iterateSectors = (_: Portfolio): number => 0
 
     manipulateHolding(portfolio: Portfolio, holding: Portfolio["holdings"][number], _: number): number {
